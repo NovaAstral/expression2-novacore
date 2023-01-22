@@ -20,10 +20,11 @@ function NaqBoom(pos,yield)
 	naq:Activate()
 end
 
-__e2setcost(1)
+__e2setcost(10)
 e2function void entity:resizeEntPhys(vector scale) --This function doesn't work properly yet
 	if not IsValid(this) or not isOwner(self, this) then return end
 	if this:GetClass() == "prop_ragdoll" then return end -- crashes if you use it on ragdoll
+	if this:GetClass() == "player" then return end -- Don't resize players, it will also crash the server
 
 	this:resizeEntPhys(scale)
 end

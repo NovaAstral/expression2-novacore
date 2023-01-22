@@ -6,6 +6,7 @@ end
 
 function entity:resizeEntPhys(scale)
 	if entity:GetClass() == "prop_ragdoll" then return end -- crashes if you use it on ragdoll
+	if entity:GetClass() == "player" then return end -- Don't resize players, it also crashes the server,
 
 	entity:PhysicsInit(SOLID_VPHYSICS)
 
