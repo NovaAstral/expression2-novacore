@@ -11,6 +11,19 @@ local defaultPrintDelay = 0.3
 local defaultMaxPrints = 15
 local printDelays = {}
 
+function SpaceBoxLimit()
+	if(game.GetIPAddress() == "98.247.134.234:27020") then -- checks if server is kripalida spacebox #2
+		if(self.player:SteamID() != "STEAM_0:0:53930685" and self.player:SteamID() != "STEAM_0:1:53193910") then --nova astral and kripalida
+			self.player:ChatPrint("You do not have permission for this function!")
+			return false
+		else
+			return true
+		end
+	else
+		return true
+	end
+end
+
 function NaqBoom(pos,yield)
     local naq = ents.Create("gate_nuke")
 	naq:Setup(pos,yield)
@@ -18,23 +31,52 @@ function NaqBoom(pos,yield)
 	naq:Activate()
 end
 
+function DakWave(pos,immuneents,classtargets,radius)
+	local wave = ents.Create("dakara_wave")
+
+	wave:Setup(pos,immuneents,classtargets,false,radius)
+	wave:Spawn()
+	wave:Activate()
+	wave:EmitSound("dakara/dakara_release_energy.wav", 511, math.random(98, 102))
+end
+
+function SatBlast(pos)
+	local sat = ents.Create("sat_blast_wave")
+	sat:SetPos(pos)
+	sat:Spawn()
+	sat:Activate()
+end
+
 __e2setcost(10)
 e2function void createNaqBoom(vector pos, number yield)
 	if(!self.player:IsAdmin()) then return end
 
-	if(game.GetIPAddress() == "98.247.134.234:27020") then -- checks if server is kripalida spacebox #2
-		if(self.player:SteamID() != "STEAM_0:0:53930685" and self.player:SteamID() != "STEAM_0:1:53193910") then --nova_astral and kripalida
-			self.player:ChatPrint("You do not have permission for this function!")
-			return
-		else
-			NaqBoom(pos,yield)
-		end
-	else --if not on kipalida spacebox #2 just do the boom
+	if(SpaceBoxLimit() == true) then
 		NaqBoom(pos,yield)
 	end
 end
 
---Because matt jeanes chatprint extension is garbage, why the hell doesn't it function exactly like printcolor
+__e2setcost(10)
+e2function void createDakaraWave(vector pos, table immuneents, table classtargets, number radius)
+	if(!self.player:IsAdmin()) then return end
+
+	if(SpaceBoxLimit() == true) then
+		DakWave(pos,immuneents,classtargets,radius)
+	end
+end
+
+__e2setcost(10)
+e2function void createSatBlast(vector pos)
+	if(!self.player:IsAdmin()) then return end
+
+	if(SpaceBoxLimit() == true) then
+		SatBlast(pos)
+	end
+end
+
+
+
+--Because matt jeanes chatprint extension is garbage, why it doesn't function exactly like printcolor
 __e2setcost(100)
 e2function void printColorOther(entity ply,...)
 	if(!ply:IsValid()) then return end
