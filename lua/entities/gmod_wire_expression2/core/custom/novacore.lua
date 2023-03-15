@@ -19,18 +19,6 @@ function NaqBoom(pos,yield)
 end
 
 __e2setcost(10)
-e2function void entity:resizeEntPhys(vector scale) --This function doesn't work properly yet
-	self.player:ChatPrint("resizeEntPhys function is not complete, this does nothing!")
-	/*
-	if not IsValid(this) or not isOwner(self, this) then return end
-	if this:GetClass() == "prop_ragdoll" then return end -- crashes if you use it on ragdoll
-	if this:GetClass() == "player" then return end -- Don't resize players, it will also crash the server
-
-	this:resizeEntPhys(scale)
-	*/
-end
-
-__e2setcost(10)
 e2function void createNaqBoom(vector pos, number yield)
 	if(!self.player:IsAdmin()) then return end
 
@@ -46,6 +34,16 @@ e2function void createNaqBoom(vector pos, number yield)
 	end
 end
 
+--Because matt jeanes chatprint extension is garbage, why the hell doesn't it function exactly like printcolor
+__e2setcost(100)
+e2function void printColorOther(entity ply,...)
+	if(!ply:IsValid()) then return end
+	if(!ply:IsPlayer()) then return end
+
+	printColorVarArg(nil, ply, false, typeids, ...)
+end
+
+--PrintColor functions because it errors otherwise since wiremod decided to local all their functions
 local function getDelaysOrCreate(ply, maxCharges, chargesDelay)
 	local printDelay = printDelays[ply]
 
@@ -104,8 +102,6 @@ end
 
 hook.Add("PlayerDisconnected", "e2_print_delays_player_dc", function(ply) printDelays[ply] = nil end)
 
---Because matt jeanes chatprint extension is garbage, why the hell doesn't it function exactly like chatprint in e2
-__e2setcost(100)
 local printColor_typeids = {
 	n = tostring,
 	s = function(text) return string.Left(text,249) end,
@@ -174,11 +170,4 @@ local function printColorArray(chip, ply, console, arr)
 		net.WriteBool(console)
 		net.WriteTable(send_array)
 	net.Send(ply)
-end
-
-e2function void printColorOther(entity ply,...)
-	if(!ply:IsValid()) then return end
-	if(!ply:IsPlayer()) then return end
-
-	printColorVarArg(nil, ply, false, typeids, ...)
 end
