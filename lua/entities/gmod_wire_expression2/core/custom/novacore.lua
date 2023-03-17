@@ -11,10 +11,10 @@ local defaultPrintDelay = 0.3
 local defaultMaxPrints = 15
 local printDelays = {}
 
-function SpaceBoxLimit()
+function SpaceBoxLimit(ply)
 	if(game.GetIPAddress() == "98.247.134.234:27020") then -- checks if server is kripalida spacebox #2
-		if(self.player:SteamID() != "STEAM_0:0:53930685" and self.player:SteamID() != "STEAM_0:1:53193910") then --nova astral and kripalida
-			self.player:ChatPrint("You do not have permission for this function!")
+		if(ply:SteamID() != "STEAM_0:0:53930685" and ply:SteamID() != "STEAM_0:1:53193910") then --nova astral and kripalida
+			ply:ChatPrint("You do not have permission for this function!")
 			return false
 		else
 			return true
@@ -47,11 +47,25 @@ function SatBlast(pos)
 	sat:Activate()
 end
 
+function SpawnEnt(class,pos,ang,ply)
+	local ent = ents.Create(class)
+	ent:SetCreator(ply)
+	ent:SetPos(pos)
+	ent:SetAngles(ang)
+	ent:Spawn()
+
+	undo.Create("E2 Spawned Entity")
+	undo.AddEntity(ent)
+	undo.SetPlayer(ply)
+	undo.Finish()
+	return ent
+end
+
 __e2setcost(10)
 e2function void createNaqBoom(vector pos, number yield)
 	if(!self.player:IsAdmin()) then return end
 
-	if(SpaceBoxLimit() == true) then
+	if(SpaceBoxLimit(self.player) == true) then
 		NaqBoom(pos,yield)
 	end
 end
@@ -60,7 +74,7 @@ __e2setcost(10)
 e2function void createDakaraWave(vector pos, table immuneents, table classtargets, number radius)
 	if(!self.player:IsAdmin()) then return end
 
-	if(SpaceBoxLimit() == true) then
+	if(SpaceBoxLimit(self.player) == true) then
 		DakWave(pos,immuneents,classtargets,radius)
 	end
 end
@@ -69,12 +83,19 @@ __e2setcost(10)
 e2function void createSatBlast(vector pos)
 	if(!self.player:IsAdmin()) then return end
 
-	if(SpaceBoxLimit() == true) then
+	if(SpaceBoxLimit(self.player) == true) then
 		SatBlast(pos)
 	end
 end
 
+__e2setcost(10)
+e2function entity entSpawn(string class,vector pos,angle ang)
+	if(!self.player:IsAdmin()) then return end
 
+	if(SpaceBoxLimit(self.player) == true) then
+		return SpawnEnt(class,pos,ang,self.player)
+	end
+end
 
 --Because matt jeanes chatprint extension is garbage, why it doesn't function exactly like printcolor
 __e2setcost(100)
