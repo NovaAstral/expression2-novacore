@@ -113,7 +113,7 @@ e2function vector mathLerpVector(number fraction,vector from, vector to)
 end
 
 __e2setcost(3)
-e2function vector mathLerpAngle(number fraction,angle angStart,angle angEnd)
+e2function angle mathLerpAngle(number fraction,angle angStart,angle angEnd)
 	return LerpAngle(fraction,angStart,angEnd)
 end
 
