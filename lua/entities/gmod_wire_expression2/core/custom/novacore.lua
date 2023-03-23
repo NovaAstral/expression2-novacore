@@ -97,6 +97,26 @@ e2function entity entSpawn(string class,vector pos,angle ang)
 	end
 end
 
+__e2setcost(1)
+e2function number mathApproach(number current,number target,number change)
+	return math.Approach(current,target,change)
+end
+
+__e2setcost(3)
+e2function number mathApproachAngle(number currentAng, number targetAng, number rate)
+	return math.ApproachAngle(currentAng,targetAng,rate)
+end
+
+__e2setcost(3)
+e2function vector mathLerpVector(number fraction,vector from, vector to)
+	return LerpVector(fraction,from,to)
+end
+
+__e2setcost(3)
+e2function vector mathLerpAngle(number fraction,angle angStart,angle angEnd)
+	return LerpAngle(fraction,angStart,angEnd)
+end
+
 --Because matt jeanes chatprint extension is garbage, why it doesn't function exactly like printcolor
 __e2setcost(100)
 e2function void printColorOther(entity ply,...)
