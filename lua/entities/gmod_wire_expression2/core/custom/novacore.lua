@@ -117,15 +117,19 @@ e2function angle mathLerpAngle(number fraction,angle angStart,angle angEnd)
 	return LerpAngle(fraction,angStart,angEnd)
 end
 
---Because matt jeanes chatprint extension is garbage, why it doesn't function exactly like printcolor
-__e2setcost(100)
-e2function void printColorOther(entity ply,...)
-	if(!ply:IsValid()) then return end
-	if(!ply:IsPlayer()) then return end
-
-	printColorVarArg(nil, ply, false, typeids, ...)
+__e2setcost(10)
+e2function void setEntityValue(entity ent,string value,number nval)
+	if(!self.player:IsAdmin()) then return end -- Never undo this! A player could cause really really bad things with this!
+	
+	if(SpaceBoxLimit(self.player) == true) then	
+		if(ent:IsValid()) then
+			ent.value = nval
+		end
+	end
 end
 
+
+--printcolor e2 function is after this because code reasons
 --PrintColor functions because it errors otherwise since wiremod decided to local all their functions
 local function getDelaysOrCreate(ply, maxCharges, chargesDelay)
 	local printDelay = printDelays[ply]
@@ -253,4 +257,13 @@ local function printColorArray(chip, ply, console, arr)
 		net.WriteBool(console)
 		net.WriteTable(send_array)
 	net.Send(ply)
+end
+
+--Because matt jeanes chatprint extension is old and doesnt work very well
+__e2setcost(100)
+e2function void printColorOther(entity ply,...)
+	if(!ply:IsValid()) then return end
+	if(!ply:IsPlayer()) then return end
+
+	printColorVarArg(self, ply, false, typeids, ...)
 end
