@@ -118,16 +118,24 @@ e2function angle mathLerpAngle(number fraction,angle angStart,angle angEnd)
 end
 
 __e2setcost(10)
-e2function void setEntityValue(entity ent,string value,number nval)
+e2function void setEntityValue(entity ent,string value,number nval) --This probably doesn't even work
 	if(!self.player:IsAdmin()) then return end -- Never undo this! A player could cause really really bad things with this!
 	
-	if(SpaceBoxLimit(self.player) == true) then	
+	if(SpaceBoxLimit(self.player) == true) then
 		if(ent:IsValid()) then
 			ent.value = nval
 		end
 	end
 end
 
+__e2setcost(10)
+e2function void entDelete(entity ent)
+	if(ent:IsValid()) then
+		if(self.player == ent:GetCreator() or self.player:IsAdmin()) then
+			ent:Remove()
+		end
+	end
+end
 
 --printcolor e2 function is after this because code reasons
 --PrintColor functions because it errors otherwise since wiremod decided to local all their functions

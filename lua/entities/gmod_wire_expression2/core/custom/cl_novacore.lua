@@ -9,3 +9,4 @@ E2Helper.Descriptions["mathApproachAngle"] = "Increments an angle towards anothe
 E2Helper.Descriptions["mathLerpVector"] = "Linear interpolation between two vectors. It is commonly used to smooth movement between two vectors"
 E2Helper.Descriptions["mathLerpAngle"] = "Returns point between first and second angle using given fraction and linear interpolation"
 E2Helper.Descriptions["printColorOther"] = "Prints to other peoples chats using the same parameters as printColor"
+E2Helper.Descriptions["entDelete"] = "Deletes the selected entity"
