@@ -270,6 +270,7 @@ end
 --Because matt jeanes chatprint extension is old and doesnt work very well
 __e2setcost(100)
 e2function void printColorOther(entity ply,...)
+	if(ply == nil) then return end
 	if(!ply:IsValid()) then return end
 	if(!ply:IsPlayer()) then return end
 
