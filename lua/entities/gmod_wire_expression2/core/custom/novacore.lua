@@ -11,8 +11,10 @@ local defaultPrintDelay = 0.3
 local defaultMaxPrints = 15
 local printDelays = {}
 
+-- This checks for specific 'admin' users on Kriaplida's Spacebox.
+-- If your server is not that, it will just return true, which means it just works
 function SpaceBoxLimit(ply)
-	if(game.GetIPAddress() == "98.247.134.234:27020") then -- checks if server is kripalida spacebox #2
+	if(game.GetIPAddress() == "98.247.134.234:27020") then -- checks if server is kripalida spacebox #1
 		if(ply:SteamID() != "STEAM_0:0:53930685" and ply:SteamID() != "STEAM_0:1:53193910") then --nova astral and kripalida
 			ply:ChatPrint("You do not have permission for this function!")
 			return false
@@ -133,6 +135,28 @@ e2function void entDelete(entity ent)
 	if(ent:IsValid()) then
 		if(self.player == ent:GetCreator() or self.player:IsAdmin()) then
 			ent:Remove()
+		end
+	end
+end
+
+__e2setcost(10)
+e2function void entSetPos(entity ent,vector vec)
+	if(ent:IsValid()) then
+		if(self.player == ent:GetCreator() or self.player:IsAdmin()) then
+			ent:SetPos(vec)
+		end
+	end
+end
+
+__e2setcost(10)
+e2function void entPhysPos(entity ent,vector vec)
+	if(ent:IsValid()) then
+		local phys = ent:GetPhysicsObject()
+
+		if(phys:IsValid()) then
+			if(self.player == ent:GetCreator() or self.player:IsAdmin()) then
+				phys:SetPos(vec)
+			end
 		end
 	end
 end
