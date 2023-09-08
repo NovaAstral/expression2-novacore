@@ -161,6 +161,99 @@ e2function void entPhysPos(entity ent,vector vec)
 	end
 end
 
+e2function void dhdButtonPress(entity ent,string button)
+	if(!self.player:IsAdmin()) then return end
+	
+	if(SpaceBoxLimit(self.player) == true) then
+		if(ent:IsValid()) then
+			ent:PressButton(button)
+            ent:SetBusy(0.01)
+		end
+	end
+end
+
+e2function void dhdButtonPress(entity ent,number button)
+	if(!self.player:IsAdmin()) then return end
+	local v = button
+	if(SpaceBoxLimit(self.player) == true) then
+		if(ent:IsValid()) then
+			if (v >= 1 and v < 256) then
+				local symbols = "A-Z1-9@#!*"
+
+				if (GetConVar("stargate_group_system"):GetBool()) then
+					symbols = "A-Z0-9@#*"
+				end
+
+				local char = string.char(v):upper()
+
+				if (v>=128 and v<=137) then -- numpad 0-9
+					char = string.char(v-80):upper() 
+				elseif (v==139) then -- numpad *
+					char = string.char(42):upper()
+				end 
+
+				if(v == StarGate.KeysConst[KEY_ENTER]) then -- Enter Key
+					ent:PressButton("DIAL",nil,true);
+				elseif(v == StarGate.KeysConst[KEY_BACKSPACE]) then -- Backspace key
+					local e = self:FindGate();
+					if not IsValid(e) then return end
+					if (GetConVar("stargate_dhd_close_incoming"):GetInt()==0 and e.IsOpen and not e.Outbound) then return end -- if incoming, then we can do nothign
+					if (e.IsOpen) then
+						e:AbortDialling();
+					elseif (e.NewActive and #ent.DialledAddress>0) then
+						ent:PressButton(ent.DialledAddress[table.getn(ent.DialledAddress)],nil,true);
+					end
+				elseif(char:find("["..symbols.."]")) then -- Only alphanumerical and the @, #
+					ent:PressButton(char,nil,true);
+				end
+			end
+
+			ent:SetBusy(0)
+		end
+	end
+end
+
+e2function void dhdFakeButtonPress(entity ent,string button)
+	if(!self.player:IsAdmin()) then return end
+	
+	if(SpaceBoxLimit(self.player) == true) then
+		if(ent:IsValid()) then
+			ent:ButtonMode(button)
+            --ent:SetBusy(0.01)
+		end
+	end
+end
+
+e2function void dhdFakeButtonPress(entity ent,number button)
+	if(!self.player:IsAdmin()) then return end
+	local v = button
+	if(SpaceBoxLimit(self.player) == true) then
+		if(ent:IsValid()) then
+			if (v >= 1 and v < 256) then
+				local symbols = "A-Z1-9@#!*"
+
+				if (GetConVar("stargate_group_system"):GetBool()) then
+					symbols = "A-Z0-9@#*"
+				end
+
+				local char = string.char(v):upper()
+
+				if (v>=128 and v<=137) then -- numpad 0-9
+					char = string.char(v-80):upper() 
+				elseif (v==139) then -- numpad *
+					char = string.char(42):upper()
+				end 
+
+				if(char:find("["..symbols.."]")) then -- Only alphanumerical and the @, #
+					ent:ButtonMode(char)
+				end
+			end
+
+			ent:SetBusy(0)
+		end
+	end
+end
+
 --printcolor e2 function is after this because code reasons
 --PrintColor functions because it errors otherwise since wiremod decided to local all their functions
 local function getDelaysOrCreate(ply, maxCharges, chargesDelay)
