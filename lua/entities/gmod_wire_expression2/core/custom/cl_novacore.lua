@@ -10,3 +10,4 @@ E2Helper.Descriptions["mathLerpVector"] = "Linear interpolation between two vect
 E2Helper.Descriptions["mathLerpAngle"] = "Returns point between first and second angle using given fraction and linear interpolation"
 E2Helper.Descriptions["printColorOther"] = "Prints to other peoples chats using the same parameters as printColor"
 E2Helper.Descriptions["entDelete"] = "Deletes the selected entity"
+E2Helper.Descriptions["dhdPressButton"] = "Presses a button on the DHD with no delay, or in buttons mode"

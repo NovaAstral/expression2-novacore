@@ -63,6 +63,13 @@ function SpawnEnt(class,pos,ang,ply)
 	return ent
 end
 
+local function validWirelink(self, ent)
+	if not IsValid(ent) then return false end
+	if not ent.extended then return false end
+	if(not isOwner(self,this) or not self.player:IsAdmin()) then return false end
+	return true
+end
+
 __e2setcost(10)
 e2function void createNaqBoom(vector pos, number yield)
 	if(!self.player:IsAdmin()) then return end
@@ -120,136 +127,109 @@ e2function angle mathLerpAngle(number fraction,angle angStart,angle angEnd)
 end
 
 __e2setcost(10)
-e2function void setEntityValue(entity ent,string value,number nval) --This probably doesn't even work
+e2function void entity:setEntityValue(string value,number nval) --This probably doesn't even work
 	if(!self.player:IsAdmin()) then return end -- Never undo this! A player could cause really really bad things with this!
 	
 	if(SpaceBoxLimit(self.player) == true) then
-		if(ent:IsValid()) then
-			ent.value = nval
+		if(this:IsValid()) then
+			this.value = nval
 		end
 	end
 end
 
 __e2setcost(10)
-e2function void entDelete(entity ent)
-	if(ent:IsValid()) then
-		if(self.player == ent:GetCreator() or self.player:IsAdmin()) then
-			ent:Remove()
+e2function void entity:entDelete()
+	if(this:IsValid()) then
+		if(self.player == this:GetCreator() or self.player:IsAdmin()) then
+			this:Remove()
 		end
 	end
 end
 
 __e2setcost(10)
-e2function void entSetPos(entity ent,vector vec)
-	if(ent:IsValid()) then
-		if(self.player == ent:GetCreator() or self.player:IsAdmin()) then
-			ent:SetPos(vec)
+e2function void entity:entSetPos(vector vec)
+	if(this:IsValid()) then
+		if(self.player == this:GetCreator() or self.player:IsAdmin()) then
+			this:SetPos(vec)
 		end
 	end
 end
 
 __e2setcost(10)
-e2function void entPhysPos(entity ent,vector vec)
-	if(ent:IsValid()) then
-		local phys = ent:GetPhysicsObject()
+e2function void entity:entPhysPos(vector vec)
+	if(this:IsValid()) then
+		local phys = this:GetPhysicsObject()
 
 		if(phys:IsValid()) then
-			if(self.player == ent:GetCreator() or self.player:IsAdmin()) then
+			if(self.player == this:GetCreator() or self.player:IsAdmin()) then
 				phys:SetPos(vec)
 			end
 		end
 	end
 end
 
-e2function void dhdButtonPress(entity ent,string button)
-	if(!self.player:IsAdmin()) then return end
-	
-	if(SpaceBoxLimit(self.player) == true) then
-		if(ent:IsValid()) then
-			ent:PressButton(button)
-            ent:SetBusy(0.01)
+__e2setcost(10)
+e2function void entity:dhdPressButton(string button, number buttonsmode)
+	if(IsValid(this)) then
+		if(isOwner(self,this) or self.player:IsAdmin()) then
+			if(this:GetNWBool("ButtonsMode") == true and buttonsmode == 1) then
+				this:ButtonMode(button)
+			else
+				this:PressButton(button)
+				this:SetBusy(0)
+			end
 		end
 	end
 end
 
-e2function void dhdButtonPress(entity ent,number button)
-	if(!self.player:IsAdmin()) then return end
-	local v = button
-	if(SpaceBoxLimit(self.player) == true) then
-		if(ent:IsValid()) then
-			if (v >= 1 and v < 256) then
+__e2setcost(10)
+e2function void entity:dhdPressButton(number button, number buttonsmode)
+	if(IsValid(this)) then
+		if not validWirelink(self, this) then return end
+
+		if not this.Inputs then return end
+		if not this.Inputs["Press Button"] then return end
+		if not this.Inputs["Buttons Mode"] then return end
+
+		if(isOwner(self,this) or self.player:IsAdmin()) then
+			local v = button
+
+			if(v >= 1 and v < 256) then
 				local symbols = "A-Z1-9@#!*"
 
-				if (GetConVar("stargate_group_system"):GetBool()) then
+				if(GetConVar("stargate_group_system"):GetBool()) then
 					symbols = "A-Z0-9@#*"
 				end
 
 				local char = string.char(v):upper()
 
-				if (v>=128 and v<=137) then -- numpad 0-9
+				if(v >= 128 and v <= 137) then -- numpad 0-9
 					char = string.char(v-80):upper() 
-				elseif (v==139) then -- numpad *
+				elseif(v==139) then -- numpad *
 					char = string.char(42):upper()
-				end 
+				end
 
-				if(v == StarGate.KeysConst[KEY_ENTER]) then -- Enter Key
-					ent:PressButton("DIAL",nil,true);
-				elseif(v == StarGate.KeysConst[KEY_BACKSPACE]) then -- Backspace key
-					local e = self:FindGate();
+				if(buttonsmode == 0 and v == StarGate.KeysConst[KEY_ENTER]) then -- Enter Key
+					this:PressButton("DIAL",nil,true)
+				elseif(buttonsmode == 0 and v == StarGate.KeysConst[KEY_BACKSPACE]) then -- Backspace key
+					local e = self:FindGate()
 					if not IsValid(e) then return end
 					if (GetConVar("stargate_dhd_close_incoming"):GetInt()==0 and e.IsOpen and not e.Outbound) then return end -- if incoming, then we can do nothign
 					if (e.IsOpen) then
-						e:AbortDialling();
-					elseif (e.NewActive and #ent.DialledAddress>0) then
-						ent:PressButton(ent.DialledAddress[table.getn(ent.DialledAddress)],nil,true);
+						e:AbortDialling()
+					elseif (e.NewActive and #this.DialledAddress > 0) then
+						this:PressButton(this.DialledAddress[table.getn(this.DialledAddress)],nil,true)
 					end
-				elseif(char:find("["..symbols.."]")) then -- Only alphanumerical and the @, #
-					ent:PressButton(char,nil,true);
+				elseif(buttonsmode == 0 and char:find("["..symbols.."]")) then -- Only alphanumerical and the @, #
+					this:PressButton(char,nil,true)
+				elseif(this:GetNWBool("ButtonsMode") == true and buttonsmode == 1 and char:find("["..symbols.."]")) then
+					this:ButtonMode(char)
 				end
 			end
 
-			ent:SetBusy(0)
-		end
-	end
-end
-
-e2function void dhdFakeButtonPress(entity ent,string button)
-	if(!self.player:IsAdmin()) then return end
-	
-	if(SpaceBoxLimit(self.player) == true) then
-		if(ent:IsValid()) then
-			ent:ButtonMode(button)
-            --ent:SetBusy(0.01)
-		end
-	end
-end
-
-e2function void dhdFakeButtonPress(entity ent,number button)
-	if(!self.player:IsAdmin()) then return end
-	local v = button
-	if(SpaceBoxLimit(self.player) == true) then
-		if(ent:IsValid()) then
-			if (v >= 1 and v < 256) then
-				local symbols = "A-Z1-9@#!*"
-
-				if (GetConVar("stargate_group_system"):GetBool()) then
-					symbols = "A-Z0-9@#*"
-				end
-
-				local char = string.char(v):upper()
-
-				if (v>=128 and v<=137) then -- numpad 0-9
-					char = string.char(v-80):upper() 
-				elseif (v==139) then -- numpad *
-					char = string.char(42):upper()
-				end 
-
-				if(char:find("["..symbols.."]")) then -- Only alphanumerical and the @, #
-					ent:ButtonMode(char)
-				end
+			if(buttonsmode == 0) then
+				this:SetBusy(0)
 			end
-
-			ent:SetBusy(0)
 		end
 	end
 end
