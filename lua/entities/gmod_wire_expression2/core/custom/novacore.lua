@@ -234,6 +234,34 @@ e2function void entity:dhdPressButton(number button, number buttonsmode)
 	end
 end
 
+__e2setcost(10)
+e2function string entity:getBoneName(number index)
+	return this:GetBoneName(index)
+end
+
+__e2setcost(10)
+e2function entity entity:getBoneParent(number index)
+	return this:GetBoneParent(bone)
+end
+
+__e2setcost(10)
+e2function table entity:getBoneChilds(number index)
+	return this:GetBoneChilds(bone)
+end
+
+__e2setcost(10)
+e2function entity entity:getBonePos(number bone)
+	local matrix = entity:GetBoneMatrix(0)
+	return matrix:GetTranslation()
+end
+
+__e2setcost(10)
+e2function entity entity:getBoneAng(number bone)
+	local matrix = entity:GetBoneMatrix(0)
+	return matrix:GetAngles()
+end
+
+
 --printcolor e2 function is after this because code reasons
 --PrintColor functions because it errors otherwise since wiremod decided to local all their functions
 local function getDelaysOrCreate(ply, maxCharges, chargesDelay)
